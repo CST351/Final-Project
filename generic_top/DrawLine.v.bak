@@ -1,0 +1,5 @@
+module DrawLine(
+		input wire move,
+		input wire en, dc,
+		output reg [7:0]dout
+);

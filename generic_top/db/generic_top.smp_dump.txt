@@ -1,0 +1,50 @@
+
+State Machine - |generic_top|TFT_Touch_Controller:u21|State
+Name State.Initial_state State.Wait_5 State.Wait_4 State.Wait_3 State.Wait_2 State.Data State.Wait_1 State.PD0 State.PD1 State.SFR_DFR State.Mode State.A0 State.A1 State.A2 State.Start 
+State.Start 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+State.A2 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+State.A1 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+State.A0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+State.Mode 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+State.SFR_DFR 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+State.PD1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+State.PD0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+State.Wait_1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+State.Data 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+State.Wait_2 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+State.Wait_3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+State.Wait_4 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+State.Wait_5 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.Initial_state 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |generic_top|State_Machine:u10|nstate
+Name nstate.stop_bit nstate.parity nstate.data_bit nstate.start_bit 
+nstate.start_bit 0 0 0 0 
+nstate.data_bit 0 0 1 1 
+nstate.parity 0 1 0 1 
+nstate.stop_bit 1 0 0 1 
+
+State Machine - |generic_top|sendByteSPI:u2|state
+Name state.bit1 state.bit2 state.bit3 state.bit4 state.bit5 state.bit6 state.bit7 state.init state.bit0 
+state.init 0 0 0 0 0 0 0 0 0 
+state.bit7 0 0 0 0 0 0 1 1 0 
+state.bit6 0 0 0 0 0 1 0 1 0 
+state.bit5 0 0 0 0 1 0 0 1 0 
+state.bit4 0 0 0 1 0 0 0 1 0 
+state.bit3 0 0 1 0 0 0 0 1 0 
+state.bit2 0 1 0 0 0 0 0 1 0 
+state.bit1 1 0 0 0 0 0 0 1 0 
+state.bit0 0 0 0 0 0 0 0 1 1 
+
+State Machine - |generic_top|LCDController:u1|state
+Name state.start state.initSequence state.drawLine 
+state.start 0 0 0 
+state.drawLine 1 0 1 
+state.initSequence 1 1 0 
+
+State Machine - |generic_top|Sprite_Controller:u0|oldDir
+Name oldDir.11 oldDir.10 oldDir.01 oldDir.00 
+oldDir.00 0 0 0 0 
+oldDir.01 0 0 1 1 
+oldDir.10 0 1 0 1 
+oldDir.11 1 0 0 1 

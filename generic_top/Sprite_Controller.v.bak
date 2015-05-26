@@ -1,0 +1,53 @@
+module Sprite_Controller(
+	input wire [17:0]colorCount,
+	input wire LR,
+	input wire [3:0]SW,
+	output reg x1,
+	output reg x2,
+	output reg y1,
+	output reg y2,
+	output wire [15:0]color
+);
+
+reg [15:0]color1;
+reg [15:0]color2;
+reg [15:0]color3;
+reg [15:0]color4;
+reg [15:0]color5;
+wire LR;
+wire x1_1;
+wire x2_1;
+wire x1_1;
+wire x2_1;
+
+
+always @ (*)			//test
+	case (SW[1:0])
+		0: color = color1;
+		1: color = color2;
+		2: color = color3;
+		3: color = color4;
+	endcase
+	
+ GrassTile image2 (
+	.pixel(colorCount[8:0]),
+	.color(color1)
+);
+	
+ FFI_Warrior_Walk_LR1 image1 (
+	.pixel(colorCount[16:0]),
+	.LR(LR),
+	.color(color2)
+);
+	
+ FFI_Warrior_Walk_LR2 image1 (
+	.pixel(colorCount[16:0]),
+	.LR(LR),
+	.color(color3)
+);
+		
+ FFI_Warrior1walk image1 (
+	.pixel(colorCount[16:0]),
+	.color(color4)
+);
+

@@ -1,0 +1,67 @@
+module sendByteSPI(
+				input wire clk;
+				input wire en;
+				output wire done;
+				output reg [3:0]data;
+);
+
+	reg [3:0]state;
+	parameter init = 0, bit7 = 1, bit6 = 2, bit5 = 3, bit4 = 4, 
+					 bit3 = 5, bit3 = 6, bit2, = 7, bit1 = 8, bit0 = 9;
+				
+	assign done = (state == init) ? 1 : 0;
+	
+	always @ (posedge clk) begin
+		case (state)
+			init: begin
+				if (en) 
+					state <= bit7;
+				else
+					state <= init;
+			end
+			bit7:
+				state < = bit6;
+			bit6:
+				state < = bit5;
+			bit5:
+				state < = bit4;
+			bit4:
+				state < = bit3;
+			bit3:
+				state < = bit2;
+			bit2:
+				state < = bit1;
+			bit1:
+				state < = bit0;
+			bit0:
+				state < = init;
+			default:
+				state <= init;
+		endcase
+	end
+	
+	always @ (*) begin
+		case (state)
+			init: begin
+				data = 4'b0000;
+			bit7:
+				data = 4'b0001;
+			bit6:
+				data = 4'b0010;
+			bit5:
+				data = 4'b0011;
+			bit4:
+				data = 4'b0100;
+			bit3:
+				data = 4'b0101;
+			bit2:
+				data = 4'b0110;
+			bit1:
+				data = 4'b0111;
+			bit0:
+				data = 4'b1000;
+			default:
+				data = 4'b0000;
+		endcase
+	end
+endmodule

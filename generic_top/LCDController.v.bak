@@ -1,0 +1,40 @@
+module LCDController(
+			input wire go,
+			input wire done,
+			input wire clk,
+			output wire en
+);
+
+parameter inil = 0, drawLine = 1;
+
+reg state;
+
+
+always @ (negedge clk)
+	case (state)
+		inil: begin
+			if (go) begin
+				state = drawLine;
+			end
+			else begin
+				state = inil;
+			end
+		end
+		drawLine: begin 
+			if (done) begin
+				state = inil;
+			end
+			else begin
+				state = drawLine;
+			end
+		end
+		default: state = inil;
+	endcase 
+	
+always @ (state)
+	case (state)
+		inil: en = 0;
+		state: en = 1;
+		default: en = 0;
+	endcase
+
