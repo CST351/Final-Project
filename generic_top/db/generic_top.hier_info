@@ -338,6 +338,107 @@ inclk[1] => pll1.CLK1
 
 
 |generic_top|Sprite_Controller:u0
+goLine => ~NO_FANOUT~
+doneLine => doneLine.IN1
+doneInit => doneInit.IN1
+colorCount[0] => colorCount[0].IN1
+colorCount[1] => colorCount[1].IN1
+colorCount[2] => colorCount[2].IN1
+colorCount[3] => colorCount[3].IN1
+colorCount[4] => colorCount[4].IN1
+colorCount[5] => colorCount[5].IN1
+colorCount[6] => colorCount[6].IN1
+colorCount[7] => colorCount[7].IN1
+colorCount[8] => colorCount[8].IN1
+colorCount[9] => colorCount[9].IN1
+colorCount[10] => colorCount[10].IN1
+colorCount[11] => colorCount[11].IN1
+colorCount[12] => colorCount[12].IN1
+colorCount[13] => colorCount[13].IN1
+colorCount[14] => colorCount[14].IN1
+colorCount[15] => colorCount[15].IN1
+colorCount[16] => colorCount[16].IN1
+colorCount[17] => colorCount[17].IN1
+dir[0] => dir[0].IN1
+dir[1] => dir[1].IN1
+dir[2] => dir[2].IN1
+dir[3] => dir[3].IN1
+clk => clk.IN2
+x1[0] <= Overworld_Control:u2.x1
+x1[1] <= Overworld_Control:u2.x1
+x1[2] <= Overworld_Control:u2.x1
+x1[3] <= Overworld_Control:u2.x1
+x1[4] <= Overworld_Control:u2.x1
+x1[5] <= Overworld_Control:u2.x1
+x1[6] <= Overworld_Control:u2.x1
+x1[7] <= Overworld_Control:u2.x1
+x2[0] <= Overworld_Control:u2.x2
+x2[1] <= Overworld_Control:u2.x2
+x2[2] <= Overworld_Control:u2.x2
+x2[3] <= Overworld_Control:u2.x2
+x2[4] <= Overworld_Control:u2.x2
+x2[5] <= Overworld_Control:u2.x2
+x2[6] <= Overworld_Control:u2.x2
+x2[7] <= Overworld_Control:u2.x2
+y1[0] <= Overworld_Control:u2.y1
+y1[1] <= Overworld_Control:u2.y1
+y1[2] <= Overworld_Control:u2.y1
+y1[3] <= Overworld_Control:u2.y1
+y1[4] <= Overworld_Control:u2.y1
+y1[5] <= Overworld_Control:u2.y1
+y1[6] <= Overworld_Control:u2.y1
+y1[7] <= Overworld_Control:u2.y1
+y1[8] <= Overworld_Control:u2.y1
+y2[0] <= Overworld_Control:u2.y2
+y2[1] <= Overworld_Control:u2.y2
+y2[2] <= Overworld_Control:u2.y2
+y2[3] <= Overworld_Control:u2.y2
+y2[4] <= Overworld_Control:u2.y2
+y2[5] <= Overworld_Control:u2.y2
+y2[6] <= Overworld_Control:u2.y2
+y2[7] <= Overworld_Control:u2.y2
+y2[8] <= Overworld_Control:u2.y2
+walkSig <= Overworld_Control:u2.walkSig
+colorOut[0] <= Overworld_Control:u2.colorOut
+colorOut[1] <= Overworld_Control:u2.colorOut
+colorOut[2] <= Overworld_Control:u2.colorOut
+colorOut[3] <= Overworld_Control:u2.colorOut
+colorOut[4] <= Overworld_Control:u2.colorOut
+colorOut[5] <= Overworld_Control:u2.colorOut
+colorOut[6] <= Overworld_Control:u2.colorOut
+colorOut[7] <= Overworld_Control:u2.colorOut
+colorOut[8] <= Overworld_Control:u2.colorOut
+colorOut[9] <= Overworld_Control:u2.colorOut
+colorOut[10] <= Overworld_Control:u2.colorOut
+colorOut[11] <= Overworld_Control:u2.colorOut
+colorOut[12] <= Overworld_Control:u2.colorOut
+colorOut[13] <= Overworld_Control:u2.colorOut
+colorOut[14] <= Overworld_Control:u2.colorOut
+colorOut[15] <= Overworld_Control:u2.colorOut
+enLine <= LCDController:u1.enLine
+enInit <= LCDController:u1.enInit
+idle <= LCDController:u1.idle
+
+
+|generic_top|Sprite_Controller:u0|LCDController:u1
+goLine => Selector4.IN3
+goLine => Selector3.IN1
+doneLine => Selector2.IN3
+doneLine => Selector4.IN4
+doneLine => Selector3.IN3
+doneLine => Selector1.IN1
+doneLine => Selector2.IN1
+doneLine => Selector4.IN1
+doneInit => Selector1.IN3
+doneInit => Selector0.IN2
+clk => state~1.DATAIN
+drawCanvas <= drawCanvas.DB_MAX_OUTPUT_PORT_TYPE
+enLine <= enLine.DB_MAX_OUTPUT_PORT_TYPE
+enInit <= enInit.DB_MAX_OUTPUT_PORT_TYPE
+idle <= idle.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2
 colorCount[0] => colorCount[0].IN8
 colorCount[1] => colorCount[1].IN8
 colorCount[2] => colorCount[2].IN8
@@ -729,7 +830,7 @@ colorOut[14] <= colorOut.DB_MAX_OUTPUT_PORT_TYPE
 colorOut[15] <= colorOut.DB_MAX_OUTPUT_PORT_TYPE
 
 
-|generic_top|Sprite_Controller:u0|GrassTile:image0
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|GrassTile:image0
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -765,7 +866,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Down1:image1
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Down1:image1
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -813,7 +914,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Down2:image2
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Down2:image2
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -861,7 +962,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Left1:image3
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Left1:image3
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -909,7 +1010,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Left2:image4
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Left2:image4
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -957,7 +1058,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Up1:image5
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Up1:image5
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -1005,7 +1106,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Up2:image6
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Up2:image6
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -1053,7 +1154,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Right1:image7
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Right1:image7
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -1101,7 +1202,7 @@ color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
 
 
-|generic_top|Sprite_Controller:u0|FFI_Warrior_Overworld_Right2:image8
+|generic_top|Sprite_Controller:u0|Overworld_Control:u2|FFI_Warrior_Overworld_Right2:image8
 pixel[0] => image.RADDR
 pixel[1] => image.RADDR1
 pixel[2] => image.RADDR2
@@ -1147,24 +1248,6 @@ color[12] <= image.DATAOUT12
 color[13] <= image.DATAOUT13
 color[14] <= image.DATAOUT14
 color[15] <= image.DATAOUT15
-
-
-|generic_top|LCDController:u1
-goLine => Selector3.IN3
-goLine => Selector2.IN2
-doneLine => state.DATAB
-doneLine => Selector2.IN4
-doneLine => Selector2.IN5
-doneLine => Selector1.IN1
-doneLine => state.DATAB
-doneLine => Selector3.IN1
-doneInit => Selector1.IN3
-doneInit => Selector0.IN2
-clk => state~1.DATAIN
-drawCanvas <= drawCanvas.DB_MAX_OUTPUT_PORT_TYPE
-enLine <= WideOr4.DB_MAX_OUTPUT_PORT_TYPE
-enInit <= enInit.DB_MAX_OUTPUT_PORT_TYPE
-idle <= idle.DB_MAX_OUTPUT_PORT_TYPE
 
 
 |generic_top|sendByteSPI:u2

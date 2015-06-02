@@ -107,12 +107,10 @@ wire dataHold;
 wire spiData;
 wire spiClk;
 wire idle;
-wire drawCanvas;
 wire [18:0]colorCount;
 reg [15:0]color;
 wire [7:0]x1, x2;
 wire [8:0]y1, y2;
-
 
 wire [3:0] dir;
 wire walking;
@@ -128,9 +126,9 @@ wire [19:0]randOut;
 ///////////////////////////
 // Sound wires
 ///////////////////////////
-wire [5:0]note;
-wire [17:0]freqDiv;
-wire pulse;
+//wire [5:0]note;
+//wire [17:0]freqDiv;
+//wire pulse;
 
 //=======================================================
 //  Structural coding
@@ -140,7 +138,6 @@ assign GPIO[7] = idle ?  1'b1 : (spiClk | ~clkHold);
 //assign GPIO[1] = idle ?  1'b1 : (spiData | dataHold);
 assign LEDG[0] = lineDone;
 assign LEDG[1] = initDone;
-
 
 
 assign LEDR[3:0] = dir;
@@ -167,27 +164,21 @@ PLL	PLL_inst (
 //	LCD Modules
 ////////////////////////////////////
 Sprite_Controller u0(
+		.goLine((|dir)),			//LCD Controller
+		.doneLine(lineDone),
+		.doneInit(initDone),
 		.colorCount(colorCount[18:1]),
 		.dir(dir),
-		.canvas(drawCanvas),
 		.clk(CLOCK_25M),
 		.x1(x1), 
 		.x2(x2),
 		.y1(y1), 
 		.y2(y2),
 		.walkSig(walking),
-		.colorOut(color)
-);
-
-LCDController u1 (
-				.goLine((|dir)),
-				.doneLine(lineDone),
-				.doneInit(initDone),
-				.drawCanvas(drawCanvas),
-				.clk(CLOCK_25M),
-				.enLine(enLine),
-				.enInit(enInit),
-				.idle(idle)
+		.colorOut(color),
+		.enLine(enLine),
+		.enInit(enInit),
+		.idle(idle)
 );
 
 sendByteSPI u2(

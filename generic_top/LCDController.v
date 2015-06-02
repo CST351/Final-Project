@@ -9,7 +9,7 @@ module LCDController(
 			output reg idle
 );
 
-parameter start = 0, initDisp = 1, drawBackground = 2, wait1 = 3, drawHero = 4, drawHold = 5, drawLine = 6;
+parameter start = 0, initDisp = 1, drawBackground = 2, wait1 = 3, drawHold = 4, drawLine = 5;
 
 reg [2:0]state;
 
@@ -36,15 +36,10 @@ always @ (posedge clk)
 			end
 		end
 		wait1: begin
-			state = drawHold;
-		end
-		drawHero: begin 
-			if (doneLine) begin
-				state = drawHold;
-			end
-			else begin
-				state = drawHero;
-			end
+			if (doneLine)
+				state = drawLine;
+			else
+				state = wait1;
 		end
 		drawHold: begin
 		   if (goLine) begin
@@ -70,11 +65,10 @@ always @ (state)
 		start: 	 		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0;end
 		initDisp: 		 begin enLine = 0; enInit = 1; idle = 0; drawCanvas = 0;end
 		drawBackground: begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 1;end
-		wait1: 	 		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0;end
-		drawHero:		 begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 0;end
+		wait1: 	 		 begin enLine = 0; enInit = 0; idle = 1; drawCanvas = 0;end
 		drawHold: 		 begin enLine = 0; enInit = 0; idle = 1; drawCanvas = 0;end
 		drawLine: 		 begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 0;end
 		default:  		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0;end
 	endcase
-
+	
 endmodule
