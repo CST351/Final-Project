@@ -81,7 +81,17 @@ module generic_top(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
+
+///////////////////////////
+// clock wires
+///////////////////////////
 wire CLOCK_25M;
+wire CLOCK_16M;
+wire CLOCK_10K;
+
+///////////////////////////
+// Sprite Animation
+///////////////////////////
 wire move;
 reg [7:0]dataOut;
 wire [8:0]dataOut1;
@@ -97,33 +107,30 @@ wire dataHold;
 wire spiData;
 wire spiClk;
 wire idle;
+wire drawCanvas;
 wire [18:0]colorCount;
 reg [15:0]color;
 wire [7:0]x1, x2;
 wire [8:0]y1, y2;
 
-wire shiftRegEn;
-wire [7:0] keyboardData;
-wire data_en;
-wire [9:0] decodedData;
-wire done;
-wire [3:0] keyDir;
-wire [3:0] touchDir;
+
 wire [3:0] dir;
 wire walking;
 
-///////////////////////////
-// Touch Screen 
-///////////////////////////
-wire Touch_Div_Clk, Touch_En, X_Touch, Y_Touch;
-wire [7:0] Data_Wire_Touch;
-wire [7:0] X_Latch, Y_Latch;
+
 
 ///////////////////////////
 // LSFR wires
 ///////////////////////////
 wire [19:0]random;
 wire [19:0]randOut;
+
+///////////////////////////
+// Sound wires
+///////////////////////////
+wire [5:0]note;
+wire [17:0]freqDiv;
+wire pulse;
 
 //=======================================================
 //  Structural coding
@@ -134,10 +141,7 @@ assign GPIO[7] = idle ?  1'b1 : (spiClk | ~clkHold);
 assign LEDG[0] = lineDone;
 assign LEDG[1] = initDone;
 
-assign dir[0] = (keyDir[0] | touchDir[0]);
-assign dir[1] = (keyDir[1] | touchDir[1]);
-assign dir[2] = (keyDir[2] | touchDir[2]);
-assign dir[3] = (keyDir[3] | touchDir[3]);
+
 
 assign LEDR[3:0] = dir;
 
@@ -154,7 +158,9 @@ always @ (*)
 
 PLL	PLL_inst (
 	.inclk0 ( CLOCK2_50 ),
-	.c0 (CLOCK_25M)
+	.c0 (CLOCK_25M),
+	.c1 (CLOCK_16M),
+	.c2 (CLOCK_10K)
 );
 
 ////////////////////////////////////
@@ -163,7 +169,7 @@ PLL	PLL_inst (
 Sprite_Controller u0(
 		.colorCount(colorCount[18:1]),
 		.dir(dir),
-		.canvas(SW[1]),
+		.canvas(drawCanvas),
 		.clk(CLOCK_25M),
 		.x1(x1), 
 		.x2(x2),
@@ -174,10 +180,10 @@ Sprite_Controller u0(
 );
 
 LCDController u1 (
-				.goInit(~KEY[0]),
 				.goLine((|dir)),
 				.doneLine(lineDone),
 				.doneInit(initDone),
+				.drawCanvas(drawCanvas),
 				.clk(CLOCK_25M),
 				.enLine(enLine),
 				.enInit(enInit),
@@ -216,74 +222,17 @@ DrawLine u4 (
 				.colorCount(colorCount)
 );
 
-////////////////////////////////////
-//	Keyboard Modules
-////////////////////////////////////
-State_Machine u10 (
-	.clk (PS2_CLK),	// keyboard clock
-	.en (shiftRegEn),
-	.done(done)
-);	// enable shift register to start collecting data
+InputController u5(
+					.CLOCK_50(CLOCK_50),
+					.PS2_CLK(PS2_CLK),
+					.touchClk(GPIO[33]),
+					.dataIn(GPIO[34]), 
+					.dataOut(GPIO[35]),
+					.PS2_DAT(PS2_DAT),
+					.ascii(LEDR[17:10]),
+					.dir(dir)
+);
 
-Shift_Reg u11 (
-	 .en (shiftRegEn),	// start collecting data
-	 .data (PS2_DAT),	// serial keyboard data
-	 .clk (PS2_CLK),	// keyboard clock
-	 .data_reg (keyboardData));	// 8 bit output data
-	 
-decoder u12 (
-	.PS2_Value (keyboardData),	// 8 bit data from shift register
-	.data_en (data_en),	// enable line for LCD control - could potentially use
-	.enable (shiftRegEn),	// negedge enable
-	.ASCII (decodedData));	// 10 bit output data
-	
-Key_Controller u13(
-	.done(done),
-	.ASCII (decodedData),
-	.leftOut (keyDir[2]),
-	.rightOut (keyDir[3]), 
-	.upOut (keyDir[0]), 
-	.downOut (keyDir[1]));
-	
-////////////////////////////////////
-//	Touch Modules
-////////////////////////////////////
-assign GPIO [33] = Touch_Div_Clk;	// touch clock
-
-Clock_Div_Touch u20 (
-	.clk (CLOCK_50),		// 50MHZ
-	.div_clk (Touch_Div_Clk));	// 1Mhz 
-	
-	
-TFT_Touch_Controller u21 (
-	.Dout (GPIO[35]),	// TDIN (output)
-	.en (Touch_En),	// data ready
-	.x (X_Touch),		// got x data
-	.y (Y_Touch),		// got y data
-	.clk (Touch_Div_Clk));
-	
-Shift_Reg_Touch u22 (
-	.en (Touch_En),	// start shifting in data
-	.data (GPIO[34]),	// TDOUT (input)
-	.clk (Touch_Div_Clk),
-	.data_reg (Data_Wire_Touch));	// 8 bit output of shifted in data
-	
-	
-LED_Controller_Touch u23(
-	.x_hold (X_Latch),
-	.y_hold (Y_Latch),
-	.right_button (touchDir[3]),
-	.left_button (touchDir[2]),
-	.down_button (touchDir[1]),
-	.up_button (touchDir[0]));
-	
-TFT_Touch_Latch u24(
-	.x_hold (X_Latch), 
-	.y_hold (Y_Latch),
-	.data (Data_Wire_Touch),
-
-	.x (X_Touch),
-	.y (Y_Touch));
 	
 //////////////////////////////
 // LSFR Modules
@@ -293,8 +242,8 @@ assign LEDG[8] = (randOut > 996146)? 0 : 1; //10% chance
 rngGenerator u31 (
 			.clk(CLOCK_50),
 			.en(1),
-			.load(SW[17]),
-			.seed(SW[16:0]),
+			.load(enInit),
+			.seed(5'b10101),
 			.dataOut(random)
 );
 
@@ -303,5 +252,25 @@ pollREG u32 (
 			.dataIn(random),
 			.dataOut(randOut)
 );
+
+//////////////////////////////
+// Sound Modules
+//////////////////////////////
+
+//soundDecoder u41 (	.clk(CLOCK_16M),
+//						.note(note),
+//						.freqDivider(freqDiv));
+//						
+//PulseOut u42 ( .clk(CLOCK_16M),
+//				  .countValue(freqDiv),
+//	           .pulseOut(pulse));
+//
+//music_overworld (
+//			.play(SW[1]),
+//			.rst(),
+//			.clk(CLOCK_10K),
+//			.note() 
+//);		  
+
 
 endmodule

@@ -1,7 +1,8 @@
 module TFT_Touch_Controller (
+	input wire clk,
 	output reg Dout, en,
-	output reg x, y,
-	input wire clk);
+	output reg x, y
+);
 	
 	localparam Start = 4'b0000, A2 = 4'b0001, A1 = 4'b0010, A0 = 4'b0011, Mode = 4'b0100, SFR_DFR = 4'b0101,
 		PD1 = 4'b0110, PD0 = 4'b0111, Wait_1 = 4'b1000, Data = 4'b1001, Wait_2 = 4'b1010, Wait_3 = 4'b1011, Wait_4 = 4'b1100, Wait_5 = 4'b1101, Initial_state = 4'b1111;

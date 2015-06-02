@@ -1,5 +1,5 @@
 
-State Machine - |generic_top|TFT_Touch_Controller:u21|State
+State Machine - |generic_top|InputController:u5|TFT_Touch_Controller:u21|State
 Name State.Initial_state State.Wait_5 State.Wait_4 State.Wait_3 State.Wait_2 State.Data State.Wait_1 State.PD0 State.PD1 State.SFR_DFR State.Mode State.A0 State.A1 State.A2 State.Start 
 State.Start 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 State.A2 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
@@ -17,7 +17,7 @@ State.Wait_4 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1
 State.Wait_5 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
 State.Initial_state 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 
-State Machine - |generic_top|State_Machine:u10|nstate
+State Machine - |generic_top|InputController:u5|State_Machine:u10|nstate
 Name nstate.stop_bit nstate.parity nstate.data_bit nstate.start_bit 
 nstate.start_bit 0 0 0 0 
 nstate.data_bit 0 0 1 1 
@@ -37,10 +37,14 @@ state.bit1 1 0 0 0 0 0 0 1 0
 state.bit0 0 0 0 0 0 0 0 1 1 
 
 State Machine - |generic_top|LCDController:u1|state
-Name state.start state.initSequence state.drawLine 
-state.start 0 0 0 
-state.drawLine 1 0 1 
-state.initSequence 1 1 0 
+Name state.drawLine state.drawHold state.drawHero state.wait1 state.drawBackground state.initDisp state.start 
+state.start 0 0 0 0 0 0 0 
+state.initDisp 0 0 0 0 0 1 1 
+state.drawBackground 0 0 0 0 1 0 1 
+state.wait1 0 0 0 1 0 0 1 
+state.drawHero 0 0 1 0 0 0 1 
+state.drawHold 0 1 0 0 0 0 1 
+state.drawLine 1 0 0 0 0 0 1 
 
 State Machine - |generic_top|Sprite_Controller:u0|oldDir
 Name oldDir.11 oldDir.10 oldDir.01 oldDir.00 

@@ -2,7 +2,7 @@
 <LOG_ROOT>
 	<PROJECT NAME="generic_top">
 		<CBX_INST_ENTRY INSTANCE_NAME="|generic_top|DrawLine:u4|lpm_mult:Mult0" CBX_FILE_NAME="mult_7dt.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|generic_top|InputController:u5|decoder:u12|altsyncram:WideOr1_rtl_0" CBX_FILE_NAME="altsyncram_ld01.tdf"/>
 		<CBX_INST_ENTRY INSTANCE_NAME="|generic_top|PLL:PLL_inst|altpll:altpll_component" CBX_FILE_NAME="PLL_altpll.v"/>
-		<CBX_INST_ENTRY INSTANCE_NAME="|generic_top|decoder:u12|altsyncram:WideOr1_rtl_0" CBX_FILE_NAME="altsyncram_ld01.tdf"/>
 	</PROJECT>
 </LOG_ROOT>
