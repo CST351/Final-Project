@@ -73,7 +73,8 @@ module generic_top(
 	output		          		FL_WP_N,
 
 	//////////// GPIO, GPIO connect to GPIO Default //////////
-	inout 		    [35:0]		GPIO
+	output 		    [34:0]		GPIO,
+	input 							GPIO34
 );
 
 
@@ -113,7 +114,7 @@ wire [7:0]x1, x2;
 wire [8:0]y1, y2;
 
 wire [3:0] dir;
-wire walking;
+
 
 
 
@@ -121,7 +122,7 @@ wire walking;
 // LSFR wires
 ///////////////////////////
 wire [19:0]random;
-wire [19:0]randOut;
+//wire [19:0]randOut; //delete after testing
 
 ///////////////////////////
 // Sound wires
@@ -135,7 +136,6 @@ wire [19:0]randOut;
 //=======================================================
 assign GPIO[3] = dataOut1[8] | dc;
 assign GPIO[7] = idle ?  1'b1 : (spiClk | ~clkHold);
-//assign GPIO[1] = idle ?  1'b1 : (spiData | dataHold);
 assign LEDG[0] = lineDone;
 assign LEDG[1] = initDone;
 
@@ -163,22 +163,26 @@ PLL	PLL_inst (
 ////////////////////////////////////
 //	LCD Modules
 ////////////////////////////////////
-Sprite_Controller u0(
-		.goLine((|dir)),			//LCD Controller
+Sprite_Controller u0(			//LCD Controller
 		.doneLine(lineDone),
 		.doneInit(initDone),
 		.colorCount(colorCount[18:1]),
 		.dir(dir),
 		.clk(CLOCK_25M),
+		.RNG(random),
 		.x1(x1), 
 		.x2(x2),
 		.y1(y1), 
 		.y2(y2),
-		.walkSig(walking),
 		.colorOut(color),
 		.enLine(enLine),
 		.enInit(enInit),
-		.idle(idle)
+		.idle(idle),
+		
+		.enterBattle(LEDR[17]),
+		
+		
+		//.GPIO (GPIO[20:10])
 );
 
 sendByteSPI u2(
@@ -217,10 +221,10 @@ InputController u5(
 					.CLOCK_50(CLOCK_50),
 					.PS2_CLK(PS2_CLK),
 					.touchClk(GPIO[33]),
-					.dataIn(GPIO[34]), 
-					.dataOut(GPIO[35]),
+					.dataIn(GPIO34), 
+					.dataOut(GPIO[34]),
 					.PS2_DAT(PS2_DAT),
-					.ascii(LEDR[17:10]),
+					.ascii(),
 					.dir(dir)
 );
 
@@ -228,7 +232,7 @@ InputController u5(
 //////////////////////////////
 // LSFR Modules
 //////////////////////////////
-assign LEDG[8] = (randOut > 996146)? 0 : 1; //10% chance
+//assign LEDG[8] = (randOut > 996146)? 0 : 1; //10% chance
 
 rngGenerator u31 (
 			.clk(CLOCK_50),
@@ -236,12 +240,6 @@ rngGenerator u31 (
 			.load(enInit),
 			.seed(5'b10101),
 			.dataOut(random)
-);
-
-pollREG u32 (
-			.en(walking),
-			.dataIn(random),
-			.dataOut(randOut)
 );
 
 //////////////////////////////

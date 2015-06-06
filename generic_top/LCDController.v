@@ -1,74 +1,109 @@
 module LCDController(
-			input wire goLine,
+			input wire clk,
+			
+			input wire enOverDraw,
+			input wire enBattleDraw,
+			
 			input wire doneLine,
 			input wire doneInit,
-			input wire clk,
+			
+			input wire battleComplete,
+			input wire battleStart,
+			
 			output reg drawCanvas,
+			
+			output reg inBattle,
+			
 			output reg enLine,
 			output reg enInit,
+			
 			output reg idle
 );
 
-parameter start = 0, initDisp = 1, drawBackground = 2, wait1 = 3, drawHold = 4, drawLine = 5;
+parameter start = 0, initDisp = 1, drawBackground = 2, overHold = 3, overDraw = 4, battleHold = 5, battleDraw = 6;
 
 reg [2:0]state;
 
 
 always @ (posedge clk)
-	case (state)
-		start: begin
-			state = initDisp;
-		end
-		initDisp: begin 
-			if (doneInit) begin
-				state = drawBackground;
-			end
-			else begin
+	begin
+		case (state)
+			start: begin
 				state = initDisp;
 			end
-		end
-		drawBackground: begin 
-			if (doneLine) begin
-				state = wait1;
+			
+			initDisp: begin 
+				if (doneInit) begin
+					state = drawBackground;
+				end
+				else begin
+					state = initDisp;
+				end
 			end
-			else begin
-				state = drawBackground;
+			
+			drawBackground: begin 
+				if (doneLine) begin
+					state = overHold;
+				end
+				else begin
+					state = drawBackground;
+				end
 			end
-		end
-		wait1: begin
-			if (doneLine)
-				state = drawLine;
-			else
-				state = wait1;
-		end
-		drawHold: begin
-		   if (goLine) begin
-				state = drawLine;
+			
+			overHold: begin
+				if (battleStart)
+					state = battleHold;
+				else if (enOverDraw) begin
+					state = overDraw;
+				end
+				else begin
+					state = overHold;
+				end
 			end
-			else begin
-				state = drawHold;
+			
+			overDraw: begin 
+				if (doneLine) begin
+					state = overHold;
+				end
+				else begin
+					state = overDraw;
+				end
 			end
-		end
-		drawLine: begin 
-			if (doneLine) begin
-				state = drawHold;
+			
+			battleHold: begin
+				if (battleComplete)
+					state = drawBackground;
+				else if (enBattleDraw) begin
+					state = battleDraw;
+				end
+				else begin
+					state = battleHold;
+				end
 			end
-			else begin
-				state = drawLine;
+			
+			battleDraw: begin 
+				if (doneLine) begin
+					state = battleHold;
+				end
+				else begin
+					state = battleDraw;
+				end
 			end
-		end
-		default: state = drawHold;
-	endcase 
+			
+			default: state = start;
+		endcase 
+	end
 	
 always @ (state)
 	case (state)
-		start: 	 		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0;end
-		initDisp: 		 begin enLine = 0; enInit = 1; idle = 0; drawCanvas = 0;end
-		drawBackground: begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 1;end
-		wait1: 	 		 begin enLine = 0; enInit = 0; idle = 1; drawCanvas = 0;end
-		drawHold: 		 begin enLine = 0; enInit = 0; idle = 1; drawCanvas = 0;end
-		drawLine: 		 begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 0;end
-		default:  		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0;end
+		start: 	 		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0; inBattle = 0; end
+		initDisp: 		 begin enLine = 0; enInit = 1; idle = 0; drawCanvas = 0; inBattle = 0; end
+		drawBackground: begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 1; inBattle = 0; end
+		overHold: 		 begin enLine = 0; enInit = 0; idle = 1; drawCanvas = 0; inBattle = 0; end
+		overDraw: 		 begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 0; inBattle = 0; end
+		battleHold:		 begin enLine = 0; enInit = 0; idle = 1; drawCanvas = 0; inBattle = 1; end
+		battleDraw:		 begin enLine = 1; enInit = 0; idle = 0; drawCanvas = 0; inBattle = 1; end
+		default:  		 begin enLine = 0; enInit = 0; idle = 0; drawCanvas = 0; inBattle = 0; end
 	endcase
 	
 endmodule

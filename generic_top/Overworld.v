@@ -1,8 +1,10 @@
-module Overworld_Control(
+module Overworld(
+	input wire clk,
+	input wire en,
 	input wire [17:0]colorCount,
 	input wire [3:0]dir,
 	input wire canvas,
-	input wire clk,
+	input wire drawHero,
 	output reg [7:0]x1, x2,
 	output reg [8:0]y1, y2,
 	output wire walkSig,
@@ -21,19 +23,14 @@ module Overworld_Control(
 	wire [15:0]left2Color;
 	
 	
-	wire [5:0] up1Width,    up1Height;
-	wire [5:0] up2Width,    up2Height;
-	wire [5:0] down1Width,  down1Height;
-	wire [5:0] down2Width,  down2Height;
-	wire [5:0] right1Width, right1Height;
-	wire [5:0] right2Width, right2Height;
-	wire [5:0] left1Width,  left1Height;
-	wire [5:0] left2Width,  left2Height;
+	wire [5:0] spriteWidth [4][2];
+	wire [5:0] spriteHeight[4][2];
+	
 
 	
 	
 	reg [23:0] count;
-	reg [3:0] animationCount;
+	reg [4:0] animationCount;
 	
 	reg WalkState;
 	reg [1:0]oldDir;
@@ -41,59 +38,73 @@ module Overworld_Control(
 	reg [7:0]originX;
 	reg [8:0]originY;
 	
+	wire [7:0]grassOffset;
+	
 	assign colorOut = (color == 16'hFFFF) ? grassColor : color;
 
-	assign x1 = (canvas) ? 8'b0 : originX;
-	assign y1 = (canvas) ? 9'b0 : originY;
+	assign x1 = (canvas|drawHero) ? 8'b0 : originX;
+	assign y1 = (canvas|drawHero) ? 9'b0 : originY;
 	
-	assign walkSig = (animationCount > 0);
+	assign grassOffset = (colorCount[7:0] + y1*16 + x1);
+	//((x1 + colorCount[3:0]) + ((y1 + colorCount[17:4])*240));
+	
+	assign walkSig = (animationCount > 15);
 	
 	//assign x1 = 0;
 	//assign y1 = 0;
 	
 	always @ (posedge WalkState)
-		if (dir[0]) begin
-			if (originX > 0) begin
-				originX = originX - 1'b1;
-				originY = originY;
+		if(en) begin
+			if (dir[0]) begin
+				if (originX > 0) begin
+					originX = originX - 1'b1;
+					originY = originY;
+				end
+				else begin
+					originX = originX;
+					originY = originY;
+				end
+			end
+			else if (dir[1]) begin
+				if (originX < 206) begin
+					originX = originX + 1'b1;
+					originY = originY;
+				end
+				else begin
+					originX = originX;
+					originY = originY;
+				end
+			end
+			else if (dir[2]) begin
+				if (originY < 287) begin
+					originX = originX;
+					originY = originY + 1'b1;
+				end
+				else begin
+					originX = originX;
+					originY = originY;
+				end
+			end
+			else if (dir[3]) begin
+				if (originY > 0) begin
+					originX = originX;
+					originY = originY - 1'b1;
+				end
+				else begin
+					originX = originX;
+					originY = originY;
+				end
 			end
 			else begin
 				originX = originX;
 				originY = originY;
-			end
+			end	
+		end	
+		else begin
+			originX = originX;
+			originY = originY;
 		end
-		else if (dir[1]) begin
-			if (originX < 206) begin
-				originX = originX + 1'b1;
-				originY = originY;
-			end
-			else begin
-				originX = originX;
-				originY = originY;
-			end
-		end
-		else if (dir[2]) begin
-			if (originY < 287) begin
-				originX = originX;
-				originY = originY + 1'b1;
-			end
-			else begin
-				originX = originX;
-				originY = originY;
-			end
-		end
-		else if (dir[3]) begin
-			if (originY > 0) begin
-				originX = originX;
-				originY = originY - 1'b1;
-			end
-			else begin
-				originX = originX;
-				originY = originY;
-			end
-		end
-		
-	
+			
 	always @ (posedge clk)
 		if (|dir == 0) begin
 			WalkState = 0;
@@ -113,50 +124,61 @@ module Overworld_Control(
 	
 	
 	always @(negedge clk) begin
-		if (canvas)
+		if (~en) begin
+			x2 = x2;
+			y2 = y2;
+		end	
+		else if (canvas)
 			begin x2 = 239; y2 = 319; end
+		else if (drawHero) begin
+			begin x2 = spriteWidth[1][0]; y2 = spriteHeight[1][0]; end
+		end
 		else if (dir[0]) 	begin						//up
 			oldDir = 0; 
 			if (animationCount[2]) //state 2
-				begin x2 = originX + up2Height; y2 = originY + up2Width; end
+				begin x2 = originX + spriteWidth[0][1]; y2 = originY + spriteHeight[0][1]; end
 			else				//state 1
-				begin x2 = originX + up1Height; y2 = originY + up1Width; end	
+				begin x2 = originX + spriteWidth[0][0]; y2 = originY + spriteHeight[0][0]; end	
 		end
 		else if (dir[1]) 	begin						//down
 			oldDir = 1;
 			if (animationCount[2]) //state 2
-				begin x2 = originX + down2Height; y2 = originY + down2Width; end
+				begin x2 = originX + spriteWidth[1][1]; y2 = originY + spriteHeight[1][1]; end
 			else				//state 1
-				begin x2 = originX + down1Height; y2 = originY + down1Width; end
+				begin x2 = originX + spriteWidth[1][0]; y2 = originY + spriteHeight[1][0]; end
 		end
 		else if (dir[2]) begin						//left
 			oldDir = 2;
 			if (animationCount[2]) //state 2
-				begin x2 = originX + left2Height; y2 = originY + left2Width; end
+				begin x2 = originX + spriteWidth[2][1]; y2 = originY + spriteHeight[2][1]; end
 			else				//state 1
-				begin x2 = originX + left1Height; y2 = originY + left1Width; end
+				begin x2 = originX + spriteWidth[2][0]; y2 = originY + spriteHeight[2][0]; end
 		end
 		else if (dir[3]) begin						//right
 			oldDir = 3;
 			if (animationCount[2]) //state 2
-				begin x2 = originX + right2Height; y2 = originY + right2Width; end
+				begin x2 = originX + spriteWidth[3][1]; y2 = originY + spriteHeight[3][1]; end
 			else				//state 1
-				begin x2 = originX + right1Height; y2 = originY + right1Width; end
+				begin x2 = originX + spriteWidth[3][0]; y2 = originY + spriteHeight[3][0]; end
 		end
 		else	begin										//default
 			oldDir = oldDir;
 			case (oldDir)
-				0: begin x2 = originX + up1Height; 	  y2 = originY + up1Width; end
-				1: begin x2 = originX + down1Height;  y2 = originY + down1Width; end
-				2: begin x2 = originX + left1Height;  y2 = originY + left1Width; end
-				3: begin x2 = originX + right1Height; y2 = originY + right1Width; end
+				0: begin x2 = originX + spriteWidth[0][0]; y2 = originY + spriteHeight[0][0]; end
+				1: begin x2 = originX + spriteWidth[1][0]; y2 = originY + spriteHeight[1][0]; end
+				2: begin x2 = originX + spriteWidth[2][0]; y2 = originY + spriteHeight[2][0]; end
+				3: begin x2 = originX + spriteWidth[3][0]; y2 = originY + spriteHeight[3][0]; end
 			endcase
 		end
 	end
 		
-	always @ (negedge clk)			
-		if (canvas)
+	always @ (negedge clk)	
+		if (~en)
+			color = color;
+		else if (canvas)
 			color = grassColor;
+		else if (drawHero)
+			color = down1Color;
 		else if (dir[0]) 
 			if (animationCount[2]) //state 2
 				color = up2Color;
@@ -190,64 +212,64 @@ module Overworld_Control(
 
 //image modules
 	 GrassTile image0 (
-		.pixel(colorCount[7:0] + y1*16 + x1),	 
+		.pixel(grassOffset),	 
 		.color(grassColor)
 	);
 
 	FFI_Warrior_Overworld_Down1 image1 (
 		.pixel(colorCount[17:0]),
 		.color(down1Color),
-		.width(down1Width),
-		.height(down1Height)
+		.width(spriteWidth[1][0]),
+		.height(spriteHeight[1][0])
 	);
 	
 	FFI_Warrior_Overworld_Down2 image2 (
 		.pixel(colorCount[17:0]),
 		.color(down2Color),
-		.width(down2Width),
-		.height(down2Height)
+		.width(spriteWidth[1][1]),
+		.height(spriteHeight[1][1])
 	);
 
 	FFI_Warrior_Overworld_Left1 image3 (
 		.pixel(colorCount[17:0]),
 		.color(left1Color),
-		.width(left1Width),
-		.height(left1Height)
+		.width(spriteWidth[2][0]),
+		.height(spriteHeight[2][0])
 	);
 
 	FFI_Warrior_Overworld_Left2 image4 (
 		.pixel(colorCount[17:0]),
 		.color(left2Color),
-		.width(left2Width),
-		.height(left2Height)
+		.width(spriteWidth[2][1]),
+		.height(spriteHeight[2][1])
 	);	
 
 	FFI_Warrior_Overworld_Up1 image5 (
 		.pixel(colorCount[17:0]),
 		.color(up1Color),
-		.width(up1Width),
-		.height(up1Height)
+		.width(spriteWidth[0][0]),
+		.height(spriteHeight[0][0])
 	);	
 	
 	FFI_Warrior_Overworld_Up2 image6 (
 		.pixel(colorCount[17:0]),
 		.color(up2Color),
-		.width(up2Width),
-		.height(up2Height)
+		.width(spriteWidth[0][1]),
+		.height(spriteHeight[0][1])
 	);		
 	
 	FFI_Warrior_Overworld_Right1 image7 (
 		.pixel(colorCount[17:0]),
 		.color(right1Color),
-		.width(right1Width),
-		.height(right1Height)
+		.width(spriteWidth[3][0]),
+		.height(spriteHeight[3][0])
 	);
 
 	FFI_Warrior_Overworld_Right2 image8 (
 		.pixel(colorCount[17:0]),
 		.color(right2Color),
-		.width(right2Width),
-		.height(right2Height)
+		.width(spriteWidth[3][1]),
+		.height(spriteHeight[3][1])
 	);
 	
 endmodule

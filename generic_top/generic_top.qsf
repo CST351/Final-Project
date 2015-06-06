@@ -570,9 +570,8 @@ set_location_assignment PIN_AF20 -to GPIO[32]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[32]
 set_location_assignment PIN_AH26 -to GPIO[33]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[33]
-set_location_assignment PIN_AH23 -to GPIO[34]
+set_location_assignment PIN_AG26 -to GPIO[34]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[34]
-set_location_assignment PIN_AG26 -to GPIO[35]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO[35]
 
 #============================================================
@@ -589,6 +588,11 @@ set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name VERILOG_FILE FFI_Warrior_Battle_Idle.v
+set_global_assignment -name VERILOG_FILE FFI_Warrior_Battle_Attack2.v
+set_global_assignment -name VERILOG_FILE FFI_Warrior_Battle_Attack1.v
+set_global_assignment -name VERILOG_FILE charizard.v
+set_global_assignment -name VERILOG_FILE BattleWorld.v
 set_global_assignment -name VERILOG_FILE rngGenerator.v
 set_global_assignment -name VERILOG_FILE pollREG.v
 set_global_assignment -name VERILOG_FILE my_ff.v
@@ -620,4 +624,5 @@ set_global_assignment -name VERILOG_FILE LCDController.v
 set_global_assignment -name VERILOG_FILE Sprite_Controller.v
 set_global_assignment -name VERILOG_FILE InputController.v
 set_global_assignment -name VERILOG_FILE Overworld.v
+set_location_assignment PIN_AH23 -to GPIO34
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

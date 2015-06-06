@@ -36,7 +36,36 @@ state.bit2 0 1 0 0 0 0 0 1 0
 state.bit1 1 0 0 0 0 0 0 1 0 
 state.bit0 0 0 0 0 0 0 0 1 1 
 
-State Machine - |generic_top|Sprite_Controller:u0|Overworld_Control:u2|oldDir
+State Machine - |generic_top|Sprite_Controller:u0|Battleworld:u3|State
+Name State.EndBattle State.wait8 State.wait7 State.wait6 State.wait5 State.wait4 State.wait3 State.wait0 State.wait2 State.wait1 State.ClearEnemyText State.DrawEnemyText State.ClearHeroText State.DrawHeroText State.EnemyIdle State.PlayerIdle State.EnemyHitAnimation State.EnemyCalc State.EnemyTurn State.PlayerHitAnimation State.PlayerCalc State.PlayerTurn State.DrawEnemy State.DrawHero State.DrawScene State.Init 
+State.Init 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+State.DrawScene 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 
+State.DrawHero 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 
+State.DrawEnemy 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 
+State.PlayerTurn 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 
+State.PlayerCalc 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 
+State.PlayerHitAnimation 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 
+State.EnemyTurn 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 
+State.EnemyCalc 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 
+State.EnemyHitAnimation 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 
+State.PlayerIdle 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 
+State.EnemyIdle 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1 
+State.DrawHeroText 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 
+State.ClearHeroText 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.DrawEnemyText 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.ClearEnemyText 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait2 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait3 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait4 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait5 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait6 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait7 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.wait8 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+State.EndBattle 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |generic_top|Sprite_Controller:u0|Overworld:u2|oldDir
 Name oldDir.11 oldDir.10 oldDir.01 oldDir.00 
 oldDir.00 0 0 0 0 
 oldDir.01 0 0 1 1 
@@ -44,10 +73,11 @@ oldDir.10 0 1 0 1
 oldDir.11 1 0 0 1 
 
 State Machine - |generic_top|Sprite_Controller:u0|LCDController:u1|state
-Name state.drawLine state.drawHold state.wait1 state.drawBackground state.initDisp state.start 
-state.start 0 0 0 0 0 0 
-state.initDisp 0 0 0 0 1 1 
-state.drawBackground 0 0 0 1 0 1 
-state.wait1 0 0 1 0 0 1 
-state.drawHold 0 1 0 0 0 1 
-state.drawLine 1 0 0 0 0 1 
+Name state.battleDraw state.battleHold state.overDraw state.overHold state.drawBackground state.initDisp state.start 
+state.start 0 0 0 0 0 0 0 
+state.initDisp 0 0 0 0 0 1 1 
+state.drawBackground 0 0 0 0 1 0 1 
+state.overHold 0 0 0 1 0 0 1 
+state.overDraw 0 0 1 0 0 0 1 
+state.battleHold 0 1 0 0 0 0 1 
+state.battleDraw 1 0 0 0 0 0 1 

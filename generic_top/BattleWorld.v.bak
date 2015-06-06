@@ -1,0 +1,292 @@
+module Battleworld (
+	input wire Clock,  					// Generic control clock (50MHz should be work)
+	//input wire DrawClock, 				// clock speed used for drawing the images
+	input wire [1:0] Dir,				// directional input
+	input wire Done,
+	input wire [17:0]ColorCount,		// which color we want to access (2nd bit)
+	input wire [19:0] RandomValue,	// value from LFSR
+	input wire battleEn,					// can we start the battle scene?
+	output reg [15:0] ColorOut,			// 16 bit color value
+	output reg [7:0]x1, x2,				// starting location
+	output reg [8:0]y1, y2,				// ending location
+	output reg DrawEn, 
+	output wire RNG_LatchEn
+	);
+	
+	
+	localparam Init = 5'b00000, DrawScene = 5'b00001, DrawHero = 5'b00010, DrawEnemy = 5'b00011, PlayerTurn = 5'b00100, PlayerCalc = 5'b00101, 
+	PlayerHitAnimation = 5'b00110, EnemyDieAnimation = 5'b00111, EnemyTurn = 5'b01000, EnemyCalc = 5'b01001, EnemyHitAnimation = 5'b01010, EndBattle = 5'b11111,
+	PlayerIdle = 5'b01011, EnemyIdle = 5'b01100, DrawText = 5'b01101, ClearText = 5'b01110;
+	
+	assign RNG_LatchEn = (State == PlayerCalc) | (State == EnemyCalc) ? 1'b1 : 1'b0;	// creates posedge when we reatch the player or enemy calc phase	- could change to grab the values as soon as we reach the player turns
+	
+	reg hit, action;
+	reg [4:0]  State;
+	reg [6:0] counter;
+	
+	wire [8:0] SceneHeight;
+	wire [7:0] SceneWidth;
+	wire [5:0] HeroHeight, HeroWidth;	// arbitrary values
+	wire [5:0] HeroHeight2, HeroWidth2;
+	wire [5:0] EnemyHeight, EnemyWidth;
+	wire [5:0] EnemyHeight2, EnemyWidth2;
+	wire [5:0] HitHeight, HitWidth;
+	wire [5:0] MissHeight, MissWidth;
+	
+	wire [17:0] SceneColorOut;		
+	wire [12:0] HeroColorOut;		// arbitrary size - change according to images
+	wire [12:0] HeroColorOut2;
+	wire [12:0] EnemyColorOut;
+	wire [12:0] EnemyColorOut2;
+	wire [10:0] HitColorOut;
+	wire [10:0] MissColorOut;
+
+	
+	always @ (posedge Clock)
+	begin
+		case (State)
+		Init:	begin
+			if (battleEn)
+				State = DrawScene;
+			else
+				State = Init;
+		end
+		DrawScene:	begin	// draw the scene starting from (0,0) to (240, 320)
+			if (!Done) 	// linedone
+				State = DrawScene;
+			else	
+				State = DrawHero;
+		end
+		DrawHero:	begin	// draw hero
+			if (!Done)
+				State = DrawHero;
+			else
+				State = DrawEnemy;
+		end
+		DrawEnemy:	begin	// draw enemy
+			if (!Done)
+				State = DrawEnemy;
+			else
+				State = PlayerTurn;	// initial drawings should be done by this point
+		end
+		PlayerTurn:	begin
+			if (~Dir)	// no directional input yet
+				State = PlayerTurn;
+			else if (Dir == 2'b01)	// run
+				State = EndBattle;
+			else if (Dir == 2'b10)	// fight
+				State = PlayerCalc;
+			else
+				State = PlayerTurn;
+		end
+		PlayerCalc:	begin
+			//if (hit)
+				State = PlayerHitAnimation;	// sucessfull hit		always goes to hit animation (miss and hit decided later)
+			//else	
+			//	State = PlayerMissAnimation;	// miss
+		end
+		PlayerHitAnimation:	begin
+			if (counter < 30000)	// gonna need a new delay value (.5sec)
+			begin
+				counter = counter + 1;	
+				//action = 1'b1;
+				State = PlayerHitAnimation;
+			end
+			else if (Done)
+			begin
+				State = PlayerIdle;
+				counter = 0;
+			end
+		end
+		PlayerIdle:	begin
+			if (!Done)
+				State = PlayerIdle;
+			else 
+				State = DrawText;
+		end
+		
+		DrawText:	begin
+		if (counter < 30000)	// gonna need new counter value (1sec) - Keep text up for 1 sec
+			begin		
+				State = DrawText;
+				counter = counter + 1'b1;
+			end
+			else if (!Done)
+				State = DrawText;
+			else
+			begin 
+				State = ClearText; // just ending the battle for now
+				counter = 0;
+			end
+		end
+		
+		ClearText:	begin
+			if (!Done)
+				State = ClearText;
+			else	
+				State = EndBattle;
+		end
+		
+		
+		EndBattle:	begin
+			State = Init;
+		end	
+		default: State = Init; 
+		endcase
+	end
+	
+	
+	always @ (State)
+	begin
+		case (State)
+		Init:			begin	
+			DrawEn = 1'b0;
+			x1 = 0;	// start at origin
+			x2 = 0;
+			y1 = 0;
+			y2 = 0;
+		end
+		DrawScene:	begin
+			DrawEn = 1'b1;
+			x1 = 0;
+			x2 = SceneWidth;	// set location outputs
+			y1 = 0;
+			y2 = SceneHeight;
+		end
+		DrawHero:	begin
+			DrawEn = 1'b1;
+			x1 = 100;
+			x2 = HeroWidth + 100;	// arbitrary values
+			y1 = 75;
+			y2 = HeroHeight + 75;
+		end
+		DrawEnemy:	begin
+			DrawEn = 1'b1;
+			x1 = 100;
+			x2 = EnemyWidth + 100;	// arbitrary values
+			y1 = 225;
+			y2 = EnemyHeight + 225;
+		end
+		PlayerTurn:	begin		// not drawing anything
+			DrawEn = 1'b0;
+			x1 = 0;	
+			x2 = 0;
+			y1 = 0;
+			y2 = 0;		
+		end
+		PlayerCalc:	begin
+			DrawEn = 1'b0;
+			x1 = 0;	
+			x2 = 0;
+			y1 = 0;
+			y2 = 0;		
+			if (RandomValue < 996146)	//90% chance to hit
+				hit = 1'b1;
+			else
+				hit = 1'b0; 
+		end
+		PlayerHitAnimation: begin	// bring sword up
+			DrawEn = 1'b1;
+			x1 = 100;
+			x2 = HeroWidth2 + 100;	// same location as original hero drawn
+			y1 = 75;
+			y2 = HeroHeight2 + 75;
+		end
+		PlayerIdle:	begin				// lower sword
+			DrawEn = 1'b1;
+			x1 = 100;
+			x2 = HeroWidth + 100;	// same location as original hero drawn
+			y1 = 75;
+			y2 = HeroHeight + 75;
+		end
+		DrawText:	begin
+			DrawEn = 1'b1;
+			if (hit)
+			begin
+				x1 = 100;
+				x2 = HeroWidth + 100;	// "hit" over enemies head
+				y1 = 75;
+				y2 = HeroHeight + 75;
+			end
+			else
+			begin
+				x1 = 100;
+				x2 = HeroWidth + 100;	// "miss" over enemies head
+				y1 = 75;
+				y2 = HeroHeight + 75;
+			end
+		end
+		ClearText:	begin
+			DrawEn = 1'b1;				
+			if (hit)
+			begin
+				x1 = 100;
+				x2 = HeroWidth + 100;	// "hit" over enemies head
+				y1 = 75;
+				y2 = HeroHeight + 75;
+			end
+			else
+			begin
+				x1 = 100;
+				x2 = HeroWidth + 100;	// "miss" over enemies head
+				y1 = 75;
+				y2 = HeroHeight + 75;
+			end
+		end
+		
+		endcase
+	end
+	
+	always @ (negedge Clock)
+	begin
+		case (State)
+		DrawScene:	begin
+			if (!Done)
+				ColorOut = SceneColorOut;			// on each negedge, grab the next pixel color
+			else
+				ColorOut = 16'hFF;				
+		end
+		DrawHero:	begin
+			if (!Done)
+				ColorOut = HeroColorOut;
+			else
+				ColorOut = 16'hFF;
+		end
+		DrawEnemy:	begin
+			if (!Done)
+				ColorOut = EnemyColorOut;
+			else
+				ColorOut = 16'hFF;
+		end
+		PlayerHitAnimation:	begin		// hero brings up sword
+			if (!Done)
+				ColorOut = HeroColorOut2;
+			else
+				ColorOut = 16'hFF;
+		end	
+		PlayerIdle:	begin					// hero goes idle again
+			if (!Done)
+				ColorOut = HeroColorOut;
+			else
+				ColorOut = 16'hFF;
+		end
+		default:	ColorOut = 16'hFF;	// default to black?
+		endcase
+	end
+	
+	
+	/////////////////////////////// 
+	// 	Picture Files Here
+	///////////////////////////////
+	
+	/* Sample
+	FFI_Warrior_Overworld_Down1 image1 (
+		.pixel(colorCount[17:0]),
+		.color(SceneColorOut),
+		.width(SceneWidth),
+		.height(SceneHeight)
+	);
+	*/
+	
+	
+endmodule
