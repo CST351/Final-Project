@@ -2,6 +2,7 @@ module InputController(
 			input  wire CLOCK_50,
 			input  wire PS2_CLK, PS2_DAT,
 			input  wire dataIn,
+			input  wire BattleEn,
 			output wire touchClk, dataOut,
 			output wire [7:0]ascii,
 			output wire [3:0]dir
@@ -94,6 +95,7 @@ module InputController(
 	LED_Controller_Touch u23(
 		.x_hold (X_Latch),
 		.y_hold (Y_Latch),
+		.BattleEn(BattleEn),
 		.dir(touchDir)
 	);
 		

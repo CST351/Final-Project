@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP4CE115F29) Path("Z:/CST_351/Lab 4 TFT LCD/generic_top/") File("generic_top.sof") MfrSpec(OpMask(1));
+		Device PartName(EP4CE115F29) Path("z:/desktop/Final-Project-master (3)/Final-Project-master/generic_top/") File("generic_top.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

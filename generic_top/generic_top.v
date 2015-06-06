@@ -115,6 +115,8 @@ wire [8:0]y1, y2;
 
 wire [3:0] dir;
 
+wire InBattle;
+
 
 
 
@@ -178,12 +180,10 @@ Sprite_Controller u0(			//LCD Controller
 		.enLine(enLine),
 		.enInit(enInit),
 		.idle(idle),
-		
-		.enterBattle(LEDR[17]),
-		
-		
+		.enterBattle(InBattle),
 		//.GPIO (GPIO[20:10])
 );
+
 
 sendByteSPI u2(
 				.clk( CLOCK_25M ),
@@ -220,6 +220,7 @@ DrawLine u4 (
 InputController u5(
 					.CLOCK_50(CLOCK_50),
 					.PS2_CLK(PS2_CLK),
+					.BattleEn(InBattle),
 					.touchClk(GPIO[33]),
 					.dataIn(GPIO34), 
 					.dataOut(GPIO[34]),
